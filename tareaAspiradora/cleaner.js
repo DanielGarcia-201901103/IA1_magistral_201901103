@@ -24,12 +24,12 @@ function test(states, visitedStates, iteration = 0) {
         visitedStates.add(currentStateKey);
     }
 
-    document.getElementById("log").innerHTML += `<br>Iteración ${iteration}: Location: ${location} | Estado: ${currentStateKey}`;
+    document.getElementById("log").innerHTML += `<br>No. ${iteration}: Location: ${location} | Estado: ${currentStateKey}`;
     console.log("Estados visitados:" + visitedStates.size + " / 8");
     
     if (visitedStates.size === 8) {
         document.getElementById("log").innerHTML += "<br><strong>Todos los estados han sido visitados. Deteniendo...</strong>";
-        return; // Detener la ejecución
+        return; 
     }
 
     var action_result = reflex_agent(location, stateA, stateB);
@@ -57,7 +57,6 @@ function test(states, visitedStates, iteration = 0) {
     }, 2000);
 }
 
-// Inicialización
 var states = ["A", "DIRTY", "DIRTY"]; 
 var visitedStates = new Set(); 
 
