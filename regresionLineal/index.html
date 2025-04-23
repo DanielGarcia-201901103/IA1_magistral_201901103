@@ -1,265 +1,77 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análisis de Educación Superior | INE Guatemala</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Análisis de Datos: Regresión y Árbol</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1><i class="fas fa-graduation-cap"></i> Análisis de Educación Superior</h1>
-            <p>Datos estadísticos del INE Guatemala - Primer Semestre 2024</p>
-        </div>
-    </header>
-
-    <div class="tabs-container">
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="intro"><i class="fas fa-info-circle"></i> Introducción</button>
-            <button class="tab-btn" data-tab="matriculados"><i class="fas fa-user-graduate"></i> Matriculados</button>
-            <button class="tab-btn" data-tab="graduados"><i class="fas fa-user-tie"></i> Graduados</button>
-            <button class="tab-btn" data-tab="docentes"><i class="fas fa-chalkboard-teacher"></i> Docentes</button>
-            <button class="tab-btn" data-tab="analisis"><i class="fas fa-chart-line"></i> Análisis</button>
-        </div>
-
-        <div class="tab-content active" id="intro">
-            <div class="container">
-                <div class="card">
-                    <h2><i class="fas fa-book-open"></i> Acerca de este proyecto</h2>
-                    <p>Este dashboard presenta un análisis estadístico de los datos de educación superior en Guatemala, proporcionados por el Instituto Nacional de Estadística (INE) para el primer semestre del año 2024.</p>
-                    
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <i class="fas fa-database"></i>
-                            <h3>Fuente de datos</h3>
-                            <p>Datos oficiales del INE recopilados de universidades públicas y privadas de Guatemala.</p>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-calendar-alt"></i>
-                            <h3>Periodo</h3>
-                            <p>Primer semestre del año 2024 (datos preliminares).</p>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-university"></i>
-                            <h3>Instituciones</h3>
-                            <p>Incluye datos de 10 universidades privadas y la USAC.</p>
-                        </div>
-                    </div>
-
-                    <h3><i class="fas fa-download"></i> Descargar datos completos</h3>
-                    <div class="download-container">
-                        <a href="datos.xlsx" class="download-button" id="downloadBtn">
-                            <i class="fas fa-file-excel"></i>
-                            <span id="downloadBtnText">Descargar Dataset Completo (Excel)</span>
-                        </a>
-                        <span class="file-info">Datos oficiales del INE • Actualizado: Abril 2024</span>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2><i class="fas fa-chart-pie"></i> Resumen Ejecutivo</h2>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value" id="total-matriculados">-</div>
-                            <div class="stat-label">Total Matriculados</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="total-graduados">-</div>
-                            <div class="stat-label">Total Graduados</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="total-docentes">-</div>
-                            <div class="stat-label">Total Docentes</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="mujeres-porcentaje">-</div>
-                            <div class="stat-label">% Mujeres Matriculadas</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-content" id="matriculados">
-            <div class="container">
-                <div class="card">
-                    <h2><i class="fas fa-user-graduate"></i> Datos de Matriculados</h2>
-                    
-                    <div class="chart-container">
-                        <canvas id="matriculados-sexo-chart"></canvas>
-                    </div>
-                    
-                    <div class="chart-row">
-                        <div class="chart-half">
-                            <canvas id="matriculados-sector-chart"></canvas>
-                        </div>
-                        <div class="chart-half">
-                            <canvas id="matriculados-edad-chart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <h3><i class="fas fa-table"></i> Datos por Departamento</h3>
-                    <div class="table-container">
-                        <table id="matriculados-table">
-                            <thead>
-                                <tr>
-                                    <th>Departamento</th>
-                                    <th>Total</th>
-                                    <th>Hombres</th>
-                                    <th>Mujeres</th>
-                                    <th>% Mujeres</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Datos se llenarán con JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-content" id="graduados">
-            <div class="container">
-                <div class="card">
-                    <h2><i class="fas fa-user-tie"></i> Datos de Graduados</h2>
-                    
-                    <div class="chart-container">
-                        <canvas id="graduados-sexo-chart"></canvas>
-                    </div>
-                    
-                    <div class="chart-row">
-                        <div class="chart-half">
-                            <canvas id="graduados-nivel-chart"></canvas>
-                        </div>
-                        <div class="chart-half">
-                            <canvas id="graduados-campo-chart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <h3><i class="fas fa-table"></i> Datos por Departamento</h3>
-                    <div class="table-container">
-                        <table id="graduados-table">
-                            <thead>
-                                <tr>
-                                    <th>Departamento</th>
-                                    <th>Total</th>
-                                    <th>Hombres</th>
-                                    <th>Mujeres</th>
-                                    <th>% Mujeres</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Datos se llenarán con JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-content" id="docentes">
-            <div class="container">
-                <div class="card">
-                    <h2><i class="fas fa-chalkboard-teacher"></i> Datos de Docentes</h2>
-                    
-                    <div class="chart-container">
-                        <canvas id="docentes-sexo-chart"></canvas>
-                    </div>
-                    
-                    <div class="chart-row">
-                        <div class="chart-half">
-                            <canvas id="docentes-departamento-chart"></canvas>
-                        </div>
-                        <div class="chart-half">
-                            <canvas id="docentes-pueblo-chart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <h3><i class="fas fa-table"></i> Datos por Departamento</h3>
-                    <div class="table-container">
-                        <table id="docentes-table">
-                            <thead>
-                                <tr>
-                                    <th>Departamento</th>
-                                    <th>Total</th>
-                                    <th>Hombres</th>
-                                    <th>Mujeres</th>
-                                    <th>% Mujeres</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Datos se llenarán con JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-content" id="analisis">
-            <div class="container">
-                <div class="card">
-                    <h2><i class="fas fa-chart-line"></i> Análisis de Regresión</h2>
-                    <p>Este análisis examina la tendencia histórica de matriculados en educación superior en Guatemala.</p>
-                    
-                    <h3>Resultados del Modelo</h3>
-                    <div class="highlight-box" id="regression-results">
-                        <p><i class="fas fa-spinner fa-spin"></i> Calculando resultados...</p>
-                    </div>
-                    
-                    <div class="chart-container">
-                        <canvas id="regression-chart"></canvas>
-                    </div>
-                    
-                    <h3>Interpretación</h3>
-                    <p id="regression-conclusion"><i class="fas fa-spinner fa-spin"></i> Analizando datos...</p>
-                </div>
-                
-                <div class="card">
-                    <h2><i class="fas fa-project-diagram"></i> Árbol de Decisión</h2>
-                    <p>Análisis de los factores determinantes en la elección de campo de estudio.</p>
-                    
-                    <h3>Atributos Clave</h3>
-                    <div class="highlight-box" id="important-features">
-                        <p><i class="fas fa-spinner fa-spin"></i> Calculando atributos importantes...</p>
-                    </div>
-                    
-                    <div id="tree-container"></div>
-                    
-                    <h3>Conclusiones</h3>
-                    <p id="tree-conclusion"><i class="fas fa-spinner fa-spin"></i> Analizando datos...</p>
-                </div>
-            </div>
-        </div>
+    <div class="container">
+      <h1>Análisis de Datos: Regresión Lineal y Árbol de Decisión</h1>
     </div>
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Instituto Nacional de Estadística</h3>
-                    <p>Dirección de Índices y Estadísticas Continuas</p>
-                    <p>Departamento de Estadísticas Socioeconómicas y Ambientales</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Desarrollado por</h3>
-                    <p id="developer-name">Josué Daniel Rojché García</p>
-                    <p id="student-id">201901103</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 Análisis de Datos de Educación Superior - INE Guatemala</p>
-            </div>
-        </div>
-    </footer>
+  <div class="container">
+    <div class="tabs">
+      <button class="tab-button active" onclick="showTab('regression-tab')">Regresión Lineal</button>
+      <button class="tab-button" onclick="showTab('tree-tab')">Árbol de Decisión</button>
+    </div>
 
-    <script src="script.js"></script>
+    <div id="regression-tab" class="tab-content active">
+      <div class="card">
+        <h2>Análisis de Regresión Lineal</h2>
+
+        <h3>Resultados del Modelo</h3>
+        <div class="highlight-box" id="regression-results">
+          <p>Calculando resultados...</p>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="regression-chart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div id="tree-tab" class="tab-content">
+      <div class="card">
+        <h2>Árbol de Decisión</h2>
+
+        <h3>Atributos Clave</h3>
+        <div class="highlight-box" id="important-features">
+          <p>Calculando atributos importantes...</p>
+        </div>
+
+        <div id="tree-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Desarrollado por</h3>
+          <h2 id="developer-name">Josué Daniel Rojché García</h2>
+          <h2 id="student-id">201901103</h2>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Análisis de Datos de Educación Superior - INE Guatemala</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function showTab(id) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      event.target.classList.add('active');
+    }
+  </script>
+  <script src="script.js"></script>
 </body>
 </html>

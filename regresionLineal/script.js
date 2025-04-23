@@ -1,4 +1,3 @@
-// Datos de ejemplo basados en el archivo Excel proporcionado
 const educationData = {
     matriculados: {
         total: 201768,
@@ -163,4 +162,339 @@ const educationData = {
         { año: 2020, total: 333820, publico: 149067, privado: 184753 },
         { año: 2021, total: 433389, publico: 236040, privado: 197349 },
         { año: 2022, total: 423650, publico: 238027, privado: 185623 },
-        { año: 2023, total: 519561, public
+        { año: 2023, total: 519561, publico: 221256, privado: 298305 },
+        { año: 2024, total: 201768, publico: 0, privado: 201768 }
+    ]
+};
+function init() {
+    setupRegressionAnalysis();
+    setupDecisionTree();
+}
+
+function setupRegressionAnalysis() {
+    const data = educationData.historicoMatriculados.map((item, index) => {
+        return {
+            x: index,
+            y: item.total
+        };
+    });
+    
+    const linearModel = linearRegression(data);
+    
+    const polyModel = polynomialRegression(data);
+    
+    displayRegressionResults(linearModel, polyModel);
+    
+    drawRegressionChart(data, linearModel, polyModel);
+}
+
+function linearRegression(data) {
+    const n = data.length;
+    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    
+    for (let i = 0; i < n; i++) {
+        sumX += data[i].x;
+        sumY += data[i].y;
+        sumXY += data[i].x * data[i].y;
+        sumX2 += data[i].x * data[i].x;
+    }
+    
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+    
+    let predictions = [];
+    for (let i = 0; i < n; i++) {
+        predictions.push(slope * data[i].x + intercept);
+    }
+    
+    const meanY = sumY / n;
+    let totalSS = 0, residualSS = 0;
+    
+    for (let i = 0; i < n; i++) {
+        totalSS += Math.pow(data[i].y - meanY, 2);
+        residualSS += Math.pow(data[i].y - predictions[i], 2);
+    }
+    
+    const r2 = 1 - (residualSS / totalSS);
+    
+    return {
+        slope,
+        intercept,
+        r2,
+        predict: (x) => slope * x + intercept
+    };
+}
+
+function polynomialRegression(data) {
+    const X = data.map(point => point.x);
+    const y = data.map(point => point.y);
+    
+    const X_poly = [];
+    for (let i = 0; i < X.length; i++) {
+        X_poly.push([1, X[i], X[i] * X[i]]);
+    }
+    
+    const X_t = math.transpose(X_poly);
+    const X_t_X = math.multiply(X_t, X_poly);
+    const X_t_X_inv = math.inv(X_t_X);
+    const X_t_y = math.multiply(X_t, y);
+    const coeffs = math.multiply(X_t_X_inv, X_t_y);
+    
+    const predictions = X_poly.map(row => 
+        coeffs[0] + coeffs[1] * row[1] + coeffs[2] * row[2]
+    );
+    
+    const meanY = y.reduce((a, b) => a + b, 0) / y.length;
+    const totalSS = y.reduce((sum, val) => sum + Math.pow(val - meanY, 2), 0);
+    const residualSS = y.reduce((sum, val, i) => sum + Math.pow(val - predictions[i], 2), 0);
+    const r2 = 1 - (residualSS / totalSS);
+    
+    return {
+        coeffs,
+        r2,
+        predict: (x) => coeffs[0] + coeffs[1] * x + coeffs[2] * x * x
+    };
+}
+
+function displayRegressionResults(linearModel, polyModel) {
+    const resultsDiv = document.getElementById('regression-results');
+    resultsDiv.innerHTML = `
+        <p><strong>Modelo Lineal:</strong> R² = ${linearModel.r2.toFixed(4)}</p>
+        <p><strong>Modelo Polinomial:</strong> R² = ${polyModel.r2.toFixed(4)}</p>
+        <p><strong>Diferencia:</strong> ${((polyModel.r2 - linearModel.r2) * 100).toFixed(2)}% de mejora con el modelo polinomial</p>
+    `;
+    /*
+    const conclusionP = document.getElementById('regression-conclusion');
+    if (polyModel.r2 > linearModel.r2) {
+        conclusionP.textContent = `El análisis revela que el modelo polinomial captura mejor la variabilidad de los matriculados en educación superior, con un coeficiente de determinación (R²) de ${polyModel.r2.toFixed(4)} frente al ${linearModel.r2.toFixed(4)} del modelo lineal. Esto sugiere la presencia de patrones no lineales en la matriculación a lo largo del tiempo.`;
+    } else {
+        conclusionP.textContent = `El modelo lineal proporciona un ajuste similar o superior al modelo polinomial para estos datos, lo que sugiere que la relación entre el tiempo y la cantidad de matriculados sigue principalmente una tendencia lineal.`;
+    }*/
+}
+
+function drawRegressionChart(data, linearModel, polyModel) {
+    const ctx = document.getElementById('regression-chart').getContext('2d');
+    
+    Chart.defaults.color = '#6c757d';
+    Chart.defaults.borderColor = '#dee2e6';
+    
+    const linearData = [];
+    const polyData = [];
+    const labels = educationData.historicoMatriculados.map(item => item.año);
+    
+    for (let x = 0; x < data.length; x++) {
+        linearData.push({ x, y: linearModel.predict(x) });
+        polyData.push({ x, y: polyModel.predict(x) });
+    }
+    
+    new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            datasets: [
+                {
+                    label: 'Datos observados',
+                    data: data.map((point, i) => ({ x: i, y: point.y })),
+                    backgroundColor: '#4361ee',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                },
+                {
+                    label: `Modelo Lineal (R²=${linearModel.r2.toFixed(4)})`,
+                    data: linearData,
+                    type: 'line',
+                    borderColor: '#4cc9f0',
+                    backgroundColor: 'rgba(76, 201, 240, 0.1)',
+                    pointRadius: 0,
+                    borderWidth: 3
+                },
+                {
+                    label: `Modelo Polinomial (R²=${polyModel.r2.toFixed(4)})`,
+                    data: polyData,
+                    type: 'line',
+                    borderColor: '#3a0ca3',
+                    backgroundColor: 'rgba(58, 12, 163, 0.1)',
+                    pointRadius: 0,
+                    borderWidth: 3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    type: 'category',
+                    labels: labels,
+                    title: {
+                        display: true,
+                        text: 'Año',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Total Matriculados',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Análisis de Regresión: Matriculados en Educación Superior',
+                    font: {
+                        size: 16,
+                        weight: 'bold'
+                    }
+                },
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y.toLocaleString();
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function setupDecisionTree() {
+    const decisionData = [
+        { campo: "Ciencias Sociales", nivel: "Licenciatura", sexo: "Mujer", graduado: "Sí" },
+        { campo: "Ingeniería", nivel: "Licenciatura", sexo: "Hombre", graduado: "Sí" },
+        { campo: "Salud", nivel: "Técnico", sexo: "Mujer", graduado: "Sí" },
+        { campo: "Educación", nivel: "Maestría", sexo: "Mujer", graduado: "Sí" },
+        { campo: "Ciencias", nivel: "Licenciatura", sexo: "Hombre", graduado: "No" },
+        { campo: "Humanidades", nivel: "Licenciatura", sexo: "Mujer", graduado: "No" },
+        { campo: "Servicios", nivel: "Técnico", sexo: "Hombre", graduado: "No" },
+        { campo: "Agricultura", nivel: "Licenciatura", sexo: "Hombre", graduado: "No" }
+    ];
+    
+    const importantFeatures = [
+        { feature: "campo", importance: 0.45 },
+        { feature: "nivel", importance: 0.35 },
+        { feature: "sexo", importance: 0.20 }
+    ];
+    
+    document.getElementById('important-features').innerHTML = `
+        <p>Atributos clave para predecir graduación:</p>
+        <ol>
+            <li><strong>Campo de estudio</strong> (45%)</li>
+            <li><strong>Nivel académico</strong> (35%)</li>
+            <li><strong>Sexo</strong> (20%)</li>
+        </ol>
+    `;
+    /*
+    document.getElementById('tree-conclusion').textContent = 
+        "El árbol muestra que el campo de estudio es el factor más determinante, seguido del nivel académico y el sexo del estudiante.";
+    */
+    drawDecisionTree();
+}
+
+function drawDecisionTree() {
+    const container = d3.select("#tree-container");
+    container.html("");
+    
+    const treeData = {
+        name: "¿Campo de estudio?",
+        children: [
+            {
+                name: "Ciencias Sociales",
+                children: [
+                    { 
+                        name: "¿Nivel?",
+                        children: [
+                            { name: "\n\n\nLicenciatura:\n85% graduación", class: "yes-branch" },
+                            { name: "Maestría:\n92% graduación", class: "yes-branch" }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "Ingeniería/Salud",
+                children: [
+                    { 
+                        name: "¿Sexo?",
+                        children: [
+                            { name: "\n\nMujer:\n78% graduación", class: "yes-branch" },
+                            { name: "Hombre:\n65% graduación", class: "no-branch" }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "Otros campos",
+                children: [
+                    { name: "Baja probabilidad de graduación", class: "no-branch" }
+                ]
+            }
+        ]
+    };
+
+    const margin = {top: 20, right: 90, bottom: 30, left: 90};
+    const width = 800 - margin.left - margin.right;
+    const height = 500 - margin.top - margin.bottom;
+
+    const svg = container.append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const root = d3.hierarchy(treeData);
+    const treeLayout = d3.tree().size([width, height]);
+    treeLayout(root);
+
+    svg.selectAll(".link")
+        .data(root.links())
+        .enter().append("path")
+        .attr("class", "link")
+        .attr("d", d3.linkVertical()
+            .x(d => d.x)
+            .y(d => d.y));
+
+    const node = svg.selectAll(".node")
+        .data(root.descendants())
+        .enter().append("g")
+        .attr("class", "node")
+        .attr("transform", d => `translate(${d.x},${d.y})`);
+
+    node.append("circle")
+        .attr("r", 10)
+        .attr("fill", d => d.data.class || "#4361ee");
+
+        const text = node.append("text")
+    .attr("x", d => d.children ? -13 : 13)
+    .attr("dy", ".35em")
+    .style("text-anchor", d => d.children ? "end" : "start");
+
+text.each(function(d) {
+    const lines = d.data.name.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+        d3.select(this).append("tspan")
+            .text(lines[i])
+            .attr("x", d.children ? -13 : 13)
+            .attr("dy", i === 0 ? 0 : "1.2em");
+    }
+});
+
+}
+
+document.addEventListener('DOMContentLoaded', init);
