@@ -263,13 +263,6 @@ function displayRegressionResults(linearModel, polyModel) {
         <p><strong>Modelo Polinomial:</strong> R² = ${polyModel.r2.toFixed(4)}</p>
         <p><strong>Diferencia:</strong> ${((polyModel.r2 - linearModel.r2) * 100).toFixed(2)}% de mejora con el modelo polinomial</p>
     `;
-    /*
-    const conclusionP = document.getElementById('regression-conclusion');
-    if (polyModel.r2 > linearModel.r2) {
-        conclusionP.textContent = `El análisis revela que el modelo polinomial captura mejor la variabilidad de los matriculados en educación superior, con un coeficiente de determinación (R²) de ${polyModel.r2.toFixed(4)} frente al ${linearModel.r2.toFixed(4)} del modelo lineal. Esto sugiere la presencia de patrones no lineales en la matriculación a lo largo del tiempo.`;
-    } else {
-        conclusionP.textContent = `El modelo lineal proporciona un ajuste similar o superior al modelo polinomial para estos datos, lo que sugiere que la relación entre el tiempo y la cantidad de matriculados sigue principalmente una tendencia lineal.`;
-    }*/
 }
 
 function drawRegressionChart(data, linearModel, polyModel) {
