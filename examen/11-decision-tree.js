@@ -1,6 +1,5 @@
 async function fit_predict() {
     const { DecisionTreeClassifier, LabelEncoder, accuracyScore } = await import('https://luisespino.github.io/mlearnjs/mlearn.mjs');
-
     // Datos del archivo pred.csv
     const D = [true, false, false, false, true, true, false, true, true, false]; // Columna 'D' (booleana)
     const E = ['N', 'P', 'P', 'N', 'P', 'P', 'N', 'P', 'N', 'P']; // Columna 'E' (etiqueta)
