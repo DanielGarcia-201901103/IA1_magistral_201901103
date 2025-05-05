@@ -15,7 +15,6 @@ async function fit_predict() {
     const encE = encoder.fitTransform(E);
 
     // Preparar características (X) y etiquetas (y)
-    // X: Combinación de 'D' (booleana) y 'E' codificada (aunque 'E' es también la salida)
     const X = D.map((dVal, i) => [dVal ? 1 : 0, encE[i]]); // Convertir booleano a 0/1
     const y = encE; // Etiquetas codificadas
 
@@ -24,13 +23,15 @@ async function fit_predict() {
     const model = new myDecisionTree();
     model.fit(X, y);
 
-    // Predecir la sexta fila (índice 5 en base 0)
-    const sixthRow = X[5]; // [1, 1] (D=true, E='P' codificado como 1)
-    const encYPredict = model.predict([sixthRow]);
-    const yPredict = encYPredict[0]; // Ya está en 0/1 (no necesita inverseTransform)
+    // Predecir todas las filas
+    const encYPredict = model.predict(X);
+    const yPredict = encYPredict; // Ya está en 0/1 (no necesita inverseTransform)
 
+    // Mostrar predicciones para todas las filas
+    const predictions = X.map((row, i) => `Fila ${i + 1}: D=${row[0]}, E=${row[1]} → Predicción=${yPredict[i]}`);
     const log = document.getElementById('log');
-    log.innerHTML = '<br><br>Predicción para la sexta fila (0 o 1):<br>' + yPredict;
+    log.innerHTML = '<br><br>Predicciones para todas las filas:<br>' + predictions.join('<br>');
+    log.innerHTML += '<br><br><strong>Predicción para la quinta fila (0 o 1):</strong><br>' + yPredict[4];
 }
 
 function showTable(table) {
