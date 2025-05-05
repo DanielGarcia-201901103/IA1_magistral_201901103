@@ -1,4 +1,4 @@
-async function fit_predict_draw() {
+/*async function fit_predict_draw() {
     const { PolynomialRegression, joinArrays } = await import('https://luisespino.github.io/mlearnjs/mlearn.mjs');
 
     const myPolynomialRegression = await PolynomialRegression(); 
@@ -34,6 +34,28 @@ async function fit_predict_draw() {
         var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
         chart.draw(data, options);         
     }
+}
+
+fit_predict_draw();*/
+
+async function fit_predict_draw() {
+    const { PolynomialRegression, joinArrays } = await import('https://luisespino.github.io/mlearnjs/mlearn.mjs');
+
+    const myPolynomialRegression = await PolynomialRegression(); 
+    const model = new myPolynomialRegression(3); // Exponente 3
+
+    // Datos del archivo pred.csv
+    const NO = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // Columna 'NO'
+    const C = [400.5, 405.8, 410.9, 425.4, 450.1, 500.5, 575.7, 456.5, 320.1, 221.9]; // Columna 'C'
+
+    model.fit(NO, C);
+
+    // Predecir para NO = 15
+    const predictionFor15 = model.predict([15])[0];
+    const flooredPrediction = Math.floor(predictionFor15 * 10) / 10; // 1 decimal sin redondear
+
+    const log = document.getElementById('log');
+    log.innerHTML = 'Predicción para NO=15: ' + flooredPrediction;
 }
 
 fit_predict_draw();
