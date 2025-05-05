@@ -15,7 +15,7 @@ async function fit_predict_draw() {
     const r2 = model.r2(C, yPredict);
 
     const log = document.getElementById('log');
-    log.innerHTML = 'MSE: ' + Math.floor(mse * 10) / 10 +'<br>R2: '+r2;; // Mostrar con 1 decimal sin aproximar
+    log.innerHTML = 'MSE: ' + Math.floor(mse * 10) / 10 +'R2: '+r2;; // Mostrar con 1 decimal sin aproximar
 
     // Opcional: Gráfica (si se desea visualizar)
     const myjoinArrays = await joinArrays();
