@@ -12,9 +12,10 @@ async function fit_predict_draw() {
 
     const yPredict = model.predict(NO);
     const mse = model.mse(C, yPredict); // Error cuadrático medio
+    const r2 = model.r2(C, yPredict);
 
     const log = document.getElementById('log');
-    log.innerHTML = 'MSE: ' + Math.floor(mse * 10) / 10; // Mostrar con 1 decimal sin aproximar
+    log.innerHTML = 'MSE: ' + Math.floor(mse * 10) / 10 +'<br>R2: '+r2;; // Mostrar con 1 decimal sin aproximar
 
     // Opcional: Gráfica (si se desea visualizar)
     const myjoinArrays = await joinArrays();
