@@ -63,7 +63,13 @@ async function fit_predict() {
     }
 
 
+    // Calcular distancia Manhattan del punto A [3, 3] a su centroide
+const pointA = [3, 3];
+const clusterA = model.predict([pointA])[0];
+const centroidA = centroids[clusterA];
+const distance = Math.abs(pointA[0] - centroidA[0]) + Math.abs(pointA[1] - centroidA[1]);
 
+log.innerHTML += `<br><br>Distancia Manhattan de A a su centroide: ${distance.toFixed(1)}`;
 }
 
 function showTable(table) {
