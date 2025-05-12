@@ -70,6 +70,8 @@ const centroidA = centroids[clusterA];
 const distance = Math.abs(pointA[0] - centroidA[0]) + Math.abs(pointA[1] - centroidA[1]);
 
 log.innerHTML += `<br><br>Distancia Manhattan de A a su centroide: ${distance.toFixed(1)}`;
+
+log.innerHTML += `<br><br>Valor Y del centroide del clúster 2: ${centroids[2][1].toFixed(1)}`;
 }
 
 function showTable(table) {
