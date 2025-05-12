@@ -13,7 +13,7 @@ async function fit_predict() {
     showTable(X);
 
     const myKMeans = await KMeans(); 
-    const model = new myKMeans(2, 300, 1e-4, 0);
+    const model = new myKMeans(3, 300, 1e-4, 0);
 
     
     model.fit(X);
