@@ -97,53 +97,35 @@ async function fit_predict() {
 
 fit_predict();*/
 async function fit_predict() {
-    const { GaussianNB } = await import('https://luisespino.github.io/mlearnjs/mlearn.mjs');
+    const { GaussianNB, accuracyScore } = await import('https://luisespino.github.io/mlearnjs/mlearn.mjs');
 
-    // Datos del archivo pred.csv
-    const NO = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // Columna 'NO'
-    const A = [10.5, 9.8, 11.2, 9.2, 9.1, 10.8, 11.5, 11.2, 10.3, 9.7]; // Columna 'A'
-    const B = [1, 5, 20, 60, 90, 120, 180, 220, 340, 410]; // Columna 'B'
-    const C = [400.5, 405.8, 410.9, 425.4, 450.1, 500.5, 575.7, 456.5, 320.1, 221.9]; // Columna 'C'
-    const E = ['N', 'P', 'P', 'N', 'P', 'P', 'N', 'P', 'N', 'P']; // Columna 'E' (etiqueta)
+    // Datos de entrenamiento: [distancia, ganancia, costo]
+    const X = [
+        [3, 5, 3], [4, 4, 3], [3, 5, 2], [2, 6, 4], [5, 3, 2],
+        [2, 2, 1], [4, 4, 3], [3, 2, 1], [2, 2, 1], [4, 5, 4],
+        [6, 6, 3], [7, 7, 4], [2, 3, 2], [1, 8, 5], [5, 2, 1],
+        [2, 9, 3], [2, 4, 6]
+    ];
 
-    // Preparar características (X) y etiquetas (y)
-    const X = A.map((_, i) => [A[i], B[i], C[i]]); // Combinar A, B, C
-    const y = E; // Etiquetas originales
+    // Etiquetas: Clase (N o P)
+    const y = ['N', 'P', 'P', 'P', 'N', 'P', 'N', 'P', 'P', 'P', 
+               'N', 'P', 'N', 'P', 'P', 'P', 'N'];
 
-    // Entrenar el modelo
     const myGaussianNB = await GaussianNB(); 
     const model = new myGaussianNB();
+
+    // Entrenar el modelo
     model.fit(X, y);
 
-    // Predecir todas las filas
-    const predictions = X.map((row, i) => {
-        return {
-            NO: NO[i],
-            A: A[i],
-            B: B[i],
-            C: C[i],
-            Real: E[i],
-            Prediccion: model.predict([row])[0]
-        };
-    });
+    // Predecir con los mismos datos de entrenamiento
+    const yPredict = model.predict(X);
 
-    // Mostrar resultados en una tabla
-    const log = document.getElementById('log');
-    let html = '<table border="1"><tr><th>NO</th><th>A</th><th>B</th><th>C</th><th>Real (E)</th><th>Predicción</th></tr>';
-    
-    predictions.forEach(p => {
-        html += `<tr>
-            <td>${p.NO}</td>
-            <td>${p.A}</td>
-            <td>${p.B}</td>
-            <td>${p.C}</td>
-            <td>${p.Real}</td>
-            <td>${p.Prediccion}</td>
-        </tr>`;
-    });
-    
-    html += '</table>';
-    log.innerHTML = html;
+    // Calcular la precisión
+    const myAccuracyScore = await accuracyScore();
+    const accuracy = myAccuracyScore(y, yPredict);
+
+    console.log("Precisión del modelo:", accuracy);
+    return accuracy;
 }
 
 fit_predict();
